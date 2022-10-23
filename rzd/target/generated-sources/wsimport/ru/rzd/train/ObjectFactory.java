@@ -42,22 +42,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AddTrain }
-     * 
-     */
-    public AddTrain createAddTrain() {
-        return new AddTrain();
-    }
-
-    /**
-     * Create an instance of {@link AddTrainResponse }
-     * 
-     */
-    public AddTrainResponse createAddTrainResponse() {
-        return new AddTrainResponse();
-    }
-
-    /**
      * Create an instance of {@link Wagon }
      * 
      */

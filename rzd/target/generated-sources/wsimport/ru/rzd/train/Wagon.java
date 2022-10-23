@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="num" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="seats" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="type" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="uuidTrain" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -35,7 +36,8 @@ import javax.xml.bind.annotation.XmlType;
     "id",
     "num",
     "seats",
-    "type"
+    "type",
+    "uuidTrain"
 })
 public class Wagon
     implements Serializable
@@ -46,6 +48,7 @@ public class Wagon
     protected int seats;
     @XmlElement(required = true)
     protected String type;
+    protected String uuidTrain;
 
     /**
      * Gets the value of the id property.
@@ -125,6 +128,30 @@ public class Wagon
      */
     public void setType(String value) {
         this.type = value;
+    }
+
+    /**
+     * Gets the value of the uuidTrain property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUuidTrain() {
+        return uuidTrain;
+    }
+
+    /**
+     * Sets the value of the uuidTrain property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUuidTrain(String value) {
+        this.uuidTrain = value;
     }
 
 }

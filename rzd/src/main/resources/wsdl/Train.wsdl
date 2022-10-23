@@ -48,21 +48,6 @@
                 </xsd:sequence>
             </xsd:complexType>
 
-            <xsd:element name="addTrain">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element ref="tns:train" minOccurs="1" maxOccurs="1"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-
-            <xsd:element name="addTrainResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element ref="tns:train" minOccurs="0" maxOccurs="1"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
         </xsd:schema>
     </types>
 

@@ -5,28 +5,40 @@
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
-        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
-       ">
+        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd">
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route id="wsRoute">
-            <from uri="cxf:bean:TrainServiceEndpoint" />
+            <from uri="cxf:bean:TrainServiceEndpoint"/>
             <process ref="trainIdGenerator"/>
-            <to uri="jms:test.MyQueue"/>
+            <inOnly uri="jms:test.MyQueue"/>
         </route>
 
         <route id="jmsRoute">
-            <from uri="jms:test.MyQueue"/>
-            <process ref="addInDb"/>
-            <to uri="log:out"/>
+            <from uri="activemq:test.MyQueue"/>
+            <transform>
+                <method ref="trainMap" method="getMapTrain"/>
+            </transform>
+            <to uri="sql:INSERT INTO train(id, name, locomotive_type, date_time)
+                                     values(:#TrainId, :#TrainName, :#TrainLocomotiveType, :#TrainDateTime)"/>
+
+            <split>
+                <simple>${body[TrainWagons]}</simple>
+                <transform>
+                    <method ref="wagonMap" method="getMapWagon"/>
+                </transform>
+                <to uri="sql:INSERT INTO wagon(id, num, seats, type, id_train)
+                                         values(:#WagonId, :#WagonNum, :#WagonSeats, :#WagonType, :#UUIDTrain)"/>
+            </split>
         </route>
     </camelContext>
+    <bean id="train" class="ru.rzd.train.Train"/>
 
-    <bean id="db" class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer"/>
+    <bean id="wagonMap" class="maps.WagonMap"/>
 
-    <bean id="addInDb" class="TrainDbGeneration"/>
+    <bean id="trainMap" class="maps.TrainMap"/>
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
 
     <bean id="trainIdGenerator" class="TrainProcessorGeneration"/>
 
@@ -39,11 +51,26 @@
     <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
         <property name="connectionFactory" ref="jmsConnectionFactory"/>
         <property name="transacted" value="false"/>
-        <property name="concurrentConsumers" value="10"/>
-        <property name="deliveryPersistent" value="true"/>
+        <property name="concurrentConsumers" value="5"/>
+        <property name="maxConcurrentConsumers" value="10"/>
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql://localhost:5432/Train?serverTimezone=Europe/Moscow"/>
+        <property name="username" value="andrew"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+    <bean id="sql" class="org.apache.camel.component.sql.SqlComponent">
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
+        <property name="configuration" ref="jmsConfig"/>
+    </bean>
+
+    <bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
         <property name="configuration" ref="jmsConfig"/>
     </bean>
 
