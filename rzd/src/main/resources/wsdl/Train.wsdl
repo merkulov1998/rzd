@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:tns="http://train.rzd.ru"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             targetNamespace="http://train.rzd.ru"
+             name="TrainService">
+    <documentation>Веб сервис TrainService, для добавления новых поездов и вагонов в базу данных.
+    </documentation>
+
+    <types>
+        <xsd:schema targetNamespace="http://train.rzd.ru" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+                    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+                    elementFormDefault="qualified" attributeFormDefault="unqualified"
+                    jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.1">
+            <xsd:annotation>
+                <xsd:appinfo>
+                    <jaxb:globalBindings>
+                        <xjc:serializable/>
+                    </jaxb:globalBindings>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:element name="train" type="tns:Train"/>
+
+            <xsd:complexType name="Wagon">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="num" type="xsd:int"/>
+                    <xsd:element name="seats" type="xsd:int"/>
+                    <xsd:element name="type" type="xsd:string"/>
+                    <xsd:element name="uuidTrain" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Train">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="name" type="xsd:string"/>
+                    <xsd:element name="locomotive-type" type="xsd:string"/>
+                    <xsd:element name="form-date" type="xsd:dateTime"/>
+                    <xsd:element name="wagons" type="tns:Wagons" />
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Wagons">
+                <xsd:sequence>
+                    <xsd:element name="wagon" type="tns:Wagon" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="addTrain">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element ref="tns:train" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="addTrainResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element ref="tns:train" minOccurs="0" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+
+    <message name="AddTrainRequest">
+        <part element="tns:train" name="parameters" />
+    </message>
+    <message name="AddTrainResponse">
+        <part name="return" element="tns:train" />
+    </message>
+
+    <portType name="TrainInterface">
+        <operation name="createNewTrain">
+            <input message="tns:AddTrainRequest"/>
+            <output message="tns:AddTrainResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="TrainServiceSOAP" type="tns:TrainInterface">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="createNewTrain">
+            <soap:operation soapAction="http://train.rzd.ru/TrainService/createNewTrain"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="TrainService">
+        <port binding="tns:TrainServiceSOAP" name="TrainServiceSOAP">
+            <soap:address location="localhost:8081/TrainService"/>
+        </port>
+    </service>
+</definitions>

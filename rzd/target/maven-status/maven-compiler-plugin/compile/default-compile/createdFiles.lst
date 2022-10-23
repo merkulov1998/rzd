@@ -1,0 +1,10 @@
+ru\rzd\train\AddTrain.class
+ru\rzd\train\Wagon.class
+MyApplication.class
+ru\rzd\train\ObjectFactory.class
+ru\rzd\train\TrainService.class
+ru\rzd\train\AddTrainResponse.class
+ru\rzd\train\package-info.class
+ru\rzd\train\Wagons.class
+ru\rzd\train\TrainInterface.class
+ru\rzd\train\Train.class
